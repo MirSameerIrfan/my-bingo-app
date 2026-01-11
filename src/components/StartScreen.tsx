@@ -42,7 +42,6 @@ const ASCII_TITLE = [
 ];
 
 export function StartScreen({ onStart }: StartScreenProps) {
-  const [bootComplete, setBootComplete] = useState(false);
   const [bootLine, setBootLine] = useState(0);
   const [modalOpen, setModalOpen] = useState<ModalType>(null);
   const [commandHistory, setCommandHistory] = useState<CommandHistory[]>([]);
@@ -51,24 +50,23 @@ export function StartScreen({ onStart }: StartScreenProps) {
     return `SES-${hex}`;
   });
 
+  const bootComplete = bootLine >= BOOT_MESSAGES.length;
+
   // Boot sequence animation
   useEffect(() => {
+    if (bootLine >= BOOT_MESSAGES.length) {
+      return; // Boot complete, no more animations
+    }
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const delay = prefersReducedMotion ? 0 : 120;
 
-    if (bootLine < BOOT_MESSAGES.length) {
-      const timer = setTimeout(() => {
-        setBootLine(bootLine + 1);
-      }, delay);
-      return () => clearTimeout(timer);
-    } else if (!bootComplete) {
-      // Use setTimeout to avoid synchronous setState in effect
-      const timer = setTimeout(() => {
-        setBootComplete(true);
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [bootLine, bootComplete]);
+    const timer = setTimeout(() => {
+      setBootLine(prev => prev + 1);
+    }, delay);
+    
+    return () => clearTimeout(timer);
+  }, [bootLine]);
 
   const addCommandToHistory = useCallback((command: string) => {
     const now = new Date();
@@ -124,7 +122,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-terminal-bg text-terminal-green font-mono p-4" style={{ fontFamily: 'var(--font-mono)' }}>
+    <div className="flex flex-col min-h-full bg-terminal-bg text-terminal-green font-mono p-4">
       {/* Terminal Window Chrome */}
       <div className="max-w-4xl mx-auto w-full border-2 border-terminal-green/30 rounded-sm">
         {/* Title Bar */}
@@ -302,7 +300,7 @@ function TerminalWindow({ type, onClose }: TerminalWindowProps) {
     info: (
       <div className="space-y-4">
         <div className="text-amber-warn text-glow">═══ SYSTEM DIAGNOSTICS ═══</div>
-        <div className="space-y-2 text-sm font-mono">
+        <div className="space-y-2 text-sm">
           <div>&gt; SYSTEM_STATUS: OPERATIONAL</div>
           <div>&gt; CPU: SOCIAL_CORE_v2 @ 3.5 GHz</div>
           <div>&gt; MEMORY: 24K/64K (37% USED)</div>
