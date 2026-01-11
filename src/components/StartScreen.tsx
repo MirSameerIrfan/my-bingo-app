@@ -58,7 +58,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
       return;
     }
     isExecutingRef.current = true;
-    
+
     setCommand(cmd);
     setTimeout(() => {
       if (cmd === 'S') {
@@ -77,7 +77,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
-      
+
       if (phase === 'help' || phase === 'about') {
         if (key === 'escape' || key === 'enter' || key === ' ') {
           setPhase('ready');
@@ -108,7 +108,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
   return (
     <div className="flex items-center justify-center min-h-full bg-black">
       <div className="crt-screen w-full max-w-3xl aspect-[4/3] flex items-center justify-center p-8">
-        <div 
+        <div
           className="w-full text-terminal-green font-[family-name:var(--font-terminal)] text-sm leading-relaxed"
         >
           {phase === 'boot' && (
@@ -185,6 +185,23 @@ export function StartScreen({ onStart }: StartScreenProps) {
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
+        }
+        
+        @keyframes glowPulse {
+          0%, 100% {
+            box-shadow: 0 0 10px currentColor, inset 0 0 10px currentColor;
+          }
+          50% {
+            box-shadow: 0 0 20px currentColor, inset 0 0 15px currentColor;
+          }
+        }
+      `}</style>
     </div>
   );
 }
