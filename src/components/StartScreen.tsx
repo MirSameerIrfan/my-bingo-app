@@ -19,7 +19,7 @@ const HELP_TEXT = [
   '• Tap a square when you find a match',
   '• Get 5 in a row (horizontal, vertical, diagonal)',
   '• FREE SPACE in center is pre-marked',
-  '• Press ESC or any key to return',
+  '• Press ESC, Enter, or Space to return',
 ];
 
 const ABOUT_TEXT = [
@@ -27,13 +27,14 @@ const ABOUT_TEXT = [
   'Social Operations Bingo System',
   'Build: 2026.01.11',
   '',
-  'Press ESC or any key to return',
+  'Press ESC, Enter, or Space to return',
 ];
 
 export function StartScreen({ onStart }: StartScreenProps) {
   const [phase, setPhase] = useState<Phase>('boot');
   const [bootLine, setBootLine] = useState(0);
   const [command, setCommand] = useState('');
+  const [isExecuting, setIsExecuting] = useState(false);
 
   useEffect(() => {
     if (phase === 'boot') {
@@ -52,6 +53,9 @@ export function StartScreen({ onStart }: StartScreenProps) {
   }, [phase, bootLine]);
 
   const executeCommand = useCallback((cmd: 'S' | 'H' | 'A') => {
+    if (isExecuting) return; // Prevent race conditions
+    
+    setIsExecuting(true);
     setCommand(cmd);
     setTimeout(() => {
       if (cmd === 'S') {
@@ -63,15 +67,19 @@ export function StartScreen({ onStart }: StartScreenProps) {
         setPhase('about');
         setCommand('');
       }
+      setIsExecuting(false);
     }, 300);
-  }, [onStart]);
+  }, [onStart, isExecuting]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       
       if (phase === 'help' || phase === 'about') {
-        if (key === 'escape' || key.length === 1) {
+        if (key === 'escape') {
+          setPhase('ready');
+          setCommand('');
+        } else if (key === 'enter' || key === ' ') {
           setPhase('ready');
           setCommand('');
         }
@@ -118,6 +126,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
               <div className="text-glow">
                 &gt; ENTER_COMMAND:{' '}
                 <button
+                  type="button"
                   onClick={() => handleCommandClick('S')}
                   className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
                   aria-label="Start game"
@@ -126,6 +135,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
                 </button>
                 TART |{' '}
                 <button
+                  type="button"
                   onClick={() => handleCommandClick('H')}
                   className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
                   aria-label="Show help"
@@ -134,6 +144,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
                 </button>
                 ELP |{' '}
                 <button
+                  type="button"
                   onClick={() => handleCommandClick('A')}
                   className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
                   aria-label="Show about"
