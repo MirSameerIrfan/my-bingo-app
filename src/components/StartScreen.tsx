@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface StartScreenProps {
   onStart: () => void;
@@ -34,7 +34,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
   const [phase, setPhase] = useState<Phase>('boot');
   const [bootLine, setBootLine] = useState(0);
   const [command, setCommand] = useState('');
-  const [isExecuting, setIsExecuting] = useState(false);
+  const isExecutingRef = useRef(false);
 
   useEffect(() => {
     if (phase === 'boot') {
@@ -53,9 +53,9 @@ export function StartScreen({ onStart }: StartScreenProps) {
   }, [phase, bootLine]);
 
   const executeCommand = useCallback((cmd: 'S' | 'H' | 'A') => {
-    if (isExecuting) return; // Prevent race conditions
+    if (isExecutingRef.current) return; // Prevent race conditions
     
-    setIsExecuting(true);
+    isExecutingRef.current = true;
     setCommand(cmd);
     setTimeout(() => {
       if (cmd === 'S') {
@@ -67,9 +67,9 @@ export function StartScreen({ onStart }: StartScreenProps) {
         setPhase('about');
         setCommand('');
       }
-      setIsExecuting(false);
+      isExecutingRef.current = false;
     }, 300);
-  }, [onStart, isExecuting]);
+  }, [onStart]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
