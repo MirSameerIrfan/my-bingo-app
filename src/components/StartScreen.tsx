@@ -1,108 +1,189 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface StartScreenProps {
   onStart: () => void;
 }
 
+type Phase = 'boot' | 'ready' | 'help' | 'about';
+
+const BOOT_MESSAGES = [
+  'SYSTEM INIT...',
+  'LOADING PROTOCOLS...',
+  'CHECKING MATRIX...',
+  'ESTABLISHING CONNECTION...',
+  'READY.',
+];
+
+const HELP_TEXT = [
+  '• Find people who match the prompts',
+  '• Tap a square when you find a match',
+  '• Get 5 in a row (horizontal, vertical, diagonal)',
+  '• FREE SPACE in center is pre-marked',
+  '• Press ESC, Enter, or Space to return',
+];
+
+const ABOUT_TEXT = [
+  'SOC OPS v1.0',
+  'Social Operations Bingo System',
+  'Build: 2026.01.11',
+  '',
+  'Press ESC, Enter, or Space to return',
+];
+
 export function StartScreen({ onStart }: StartScreenProps) {
-  const [lineIndex, setLineIndex] = useState(0);
-
-  const bootSequence = [
-    'SYSTEM v2.1 INITIALIZING...',
-    'LOADING SOCIAL PROTOCOLS...',
-    '> SOC_OPS.EXE',
-    '',
-    '╔═══════════════════════════════╗',
-    '║      SOC OPS TERMINAL v2.1   ║',
-    '║      SOCIAL BINGO SYSTEM     ║',
-    '╚═══════════════════════════════╝',
-  ];
-
-  const instructions = [
-    '> MISSION PARAMETERS:',
-    '  [1] LOCATE TARGETS MATCHING CRITERIA',
-    '  [2] EXECUTE TAP ON VERIFIED MATCH',
-    '  [3] ACHIEVE 5-IN-ROW FOR VICTORY',
-    '',
-    '> STATUS: READY FOR DEPLOYMENT',
-  ];
+  const [phase, setPhase] = useState<Phase>('boot');
+  const [bootLine, setBootLine] = useState(0);
+  const [command, setCommand] = useState('');
+  const isExecutingRef = useRef(false);
 
   useEffect(() => {
-    if (lineIndex < bootSequence.length) {
-      const timer = setTimeout(() => {
-        setLineIndex(lineIndex + 1);
-      }, 150);
-      return () => clearTimeout(timer);
+    if (phase === 'boot') {
+      if (bootLine < BOOT_MESSAGES.length) {
+        const timer = setTimeout(() => {
+          setBootLine(bootLine + 1);
+        }, 100);
+        return () => clearTimeout(timer);
+      } else {
+        const timer = setTimeout(() => {
+          setPhase('ready');
+        }, 100);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [lineIndex, bootSequence.length]);
+  }, [phase, bootLine]);
 
-  const showInstructions = lineIndex >= bootSequence.length;
+  const executeCommand = useCallback((cmd: 'S' | 'H' | 'A') => {
+    // Atomic check-and-set to prevent race conditions
+    if (isExecutingRef.current) {
+      return;
+    }
+    isExecutingRef.current = true;
+
+    setCommand(cmd);
+    setTimeout(() => {
+      if (cmd === 'S') {
+        onStart();
+      } else if (cmd === 'H') {
+        setPhase('help');
+        setCommand('');
+      } else if (cmd === 'A') {
+        setPhase('about');
+        setCommand('');
+      }
+      isExecutingRef.current = false;
+    }, 300);
+  }, [onStart]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+
+      if (phase === 'help' || phase === 'about') {
+        if (key === 'escape' || key === 'enter' || key === ' ') {
+          setPhase('ready');
+          setCommand('');
+        }
+        return;
+      }
+
+      if (phase === 'ready') {
+        if (key === 's') {
+          executeCommand('S');
+        } else if (key === 'h') {
+          executeCommand('H');
+        } else if (key === 'a') {
+          executeCommand('A');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [phase, executeCommand]);
+
+  const handleCommandClick = (cmd: 'S' | 'H' | 'A') => {
+    executeCommand(cmd);
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-6 bg-bg-darker relative overflow-hidden">
-      {/* Scanlines overlay */}
-      <div className="scanlines" />
-
-      <div className="crt-screen bg-bg-dark border-2 border-terminal-green/30 p-8 max-w-md w-full relative z-10">
-        {/* Boot sequence */}
-        <div className="text-terminal-green font-mono text-sm space-y-1 mb-6">
-          {bootSequence.slice(0, lineIndex).map((line, i) => (
-            <div
-              key={i}
-              className="text-glow"
-              style={{
-                animationDelay: `${i * 150}ms`,
-                opacity: 0,
-                animation: 'fadeIn 0.3s ease-out forwards'
-              }}
-            >
-              {line || '\u00A0'}
+    <div className="flex items-center justify-center min-h-full bg-black">
+      <div className="crt-screen w-full max-w-3xl aspect-[4/3] flex items-center justify-center p-8">
+        <div
+          className="w-full text-terminal-green font-[family-name:var(--font-terminal)] text-sm leading-relaxed"
+        >
+          {phase === 'boot' && (
+            <div className="space-y-1">
+              {BOOT_MESSAGES.slice(0, bootLine).map((msg, i) => (
+                <div key={i} className="text-glow">
+                  {msg}
+                </div>
+              ))}
             </div>
-          ))}
-          {lineIndex < bootSequence.length && (
-            <div className="cursor-blink" />
+          )}
+
+          {phase === 'ready' && (
+            <div className="space-y-4">
+              <div className="text-glow">
+                &gt; ENTER_COMMAND:{' '}
+                <button
+                  type="button"
+                  onClick={() => handleCommandClick('S')}
+                  className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
+                  aria-label="Start game"
+                >
+                  [S]
+                </button>
+                TART |{' '}
+                <button
+                  type="button"
+                  onClick={() => handleCommandClick('H')}
+                  className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
+                  aria-label="Show help"
+                >
+                  [H]
+                </button>
+                ELP |{' '}
+                <button
+                  type="button"
+                  onClick={() => handleCommandClick('A')}
+                  className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
+                  aria-label="Show about"
+                >
+                  [A]
+                </button>
+                BOUT
+                {command && (
+                  <span className="ml-2">{command}</span>
+                )}
+                {!command && (
+                  <span className="cursor-blink ml-1">_</span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {phase === 'help' && (
+            <div className="space-y-2">
+              <div className="text-glow mb-4">&gt; HELP:</div>
+              {HELP_TEXT.map((line, i) => (
+                <div key={i} className="text-terminal-dim pl-4">
+                  {line}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {phase === 'about' && (
+            <div className="space-y-2">
+              <div className="text-glow mb-4">&gt; ABOUT:</div>
+              {ABOUT_TEXT.map((line, i) => (
+                <div key={i} className="text-terminal-dim pl-4">
+                  {line}
+                </div>
+              ))}
+            </div>
           )}
         </div>
-
-        {/* Instructions with fade-in */}
-        {showInstructions && (
-          <div
-            className="space-y-1 mb-8"
-            style={{
-              animation: 'fadeIn 0.5s ease-out'
-            }}
-          >
-            {instructions.map((line, i) => (
-              <div
-                key={i}
-                className="text-terminal-dim text-sm text-glow"
-                style={{
-                  animationDelay: `${i * 100}ms`,
-                  opacity: 0,
-                  animation: 'fadeIn 0.3s ease-out forwards'
-                }}
-              >
-                {line || '\u00A0'}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Start button */}
-        {showInstructions && (
-          <button
-            onClick={onStart}
-            className="w-full bg-terminal-green/10 text-terminal-bright border-2 border-terminal-green font-bold py-4 px-8 text-lg hover:bg-terminal-green/20 active:bg-terminal-green/30 transition-all text-glow-md"
-            style={{
-              animation: 'fadeIn 0.5s ease-out, glowPulse 2s ease-in-out infinite',
-              animationDelay: '0.8s',
-              opacity: 0,
-              animationFillMode: 'forwards'
-            }}
-          >
-            [ INITIATE MISSION ]
-          </button>
-        )}
       </div>
 
       <style>{`
