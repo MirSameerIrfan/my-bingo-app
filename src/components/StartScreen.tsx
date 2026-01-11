@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface StartScreenProps {
   onStart: () => void;
@@ -51,6 +51,21 @@ export function StartScreen({ onStart }: StartScreenProps) {
     }
   }, [phase, bootLine]);
 
+  const executeCommand = useCallback((cmd: 'S' | 'H' | 'A') => {
+    setCommand(cmd);
+    setTimeout(() => {
+      if (cmd === 'S') {
+        onStart();
+      } else if (cmd === 'H') {
+        setPhase('help');
+        setCommand('');
+      } else if (cmd === 'A') {
+        setPhase('about');
+        setCommand('');
+      }
+    }, 300);
+  }, [onStart]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
@@ -65,43 +80,21 @@ export function StartScreen({ onStart }: StartScreenProps) {
 
       if (phase === 'ready') {
         if (key === 's') {
-          setCommand('S');
-          setTimeout(() => {
-            onStart();
-          }, 300);
+          executeCommand('S');
         } else if (key === 'h') {
-          setCommand('H');
-          setTimeout(() => {
-            setPhase('help');
-            setCommand('');
-          }, 300);
+          executeCommand('H');
         } else if (key === 'a') {
-          setCommand('A');
-          setTimeout(() => {
-            setPhase('about');
-            setCommand('');
-          }, 300);
+          executeCommand('A');
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [phase, onStart]);
+  }, [phase, executeCommand]);
 
   const handleCommandClick = (cmd: 'S' | 'H' | 'A') => {
-    setCommand(cmd);
-    setTimeout(() => {
-      if (cmd === 'S') {
-        onStart();
-      } else if (cmd === 'H') {
-        setPhase('help');
-        setCommand('');
-      } else if (cmd === 'A') {
-        setPhase('about');
-        setCommand('');
-      }
-    }, 300);
+    executeCommand(cmd);
   };
 
   return (
@@ -109,7 +102,6 @@ export function StartScreen({ onStart }: StartScreenProps) {
       <div className="crt-screen w-full max-w-3xl aspect-[4/3] flex items-center justify-center p-8">
         <div 
           className="w-full text-terminal-green font-[family-name:var(--font-terminal)] text-sm leading-relaxed"
-          style={{ fontFamily: 'var(--font-terminal)' }}
         >
           {phase === 'boot' && (
             <div className="space-y-1">
@@ -128,7 +120,6 @@ export function StartScreen({ onStart }: StartScreenProps) {
                 <button
                   onClick={() => handleCommandClick('S')}
                   className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
-                  style={{ fontFamily: 'var(--font-terminal)' }}
                   aria-label="Start game"
                 >
                   [S]
@@ -137,7 +128,6 @@ export function StartScreen({ onStart }: StartScreenProps) {
                 <button
                   onClick={() => handleCommandClick('H')}
                   className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
-                  style={{ fontFamily: 'var(--font-terminal)' }}
                   aria-label="Show help"
                 >
                   [H]
@@ -146,7 +136,6 @@ export function StartScreen({ onStart }: StartScreenProps) {
                 <button
                   onClick={() => handleCommandClick('A')}
                   className="hover:text-terminal-glow transition-colors cursor-pointer bg-transparent border-0 text-terminal-green font-[family-name:var(--font-terminal)]"
-                  style={{ fontFamily: 'var(--font-terminal)' }}
                   aria-label="Show about"
                 >
                   [A]
