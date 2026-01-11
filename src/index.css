@@ -6,6 +6,11 @@
   --color-marked: #dcfce7;
   --color-marked-border: #22c55e;
   --color-bingo: #fbbf24;
+  --color-terminal-green: #33ff33;
+  --color-terminal-green-dark: #00aa00;
+  --color-terminal-bg: #000000;
+  --color-amber-warn: #ffaa00;
+  --font-mono: 'Courier New', 'Consolas', monospace;
 }
 
 html,
@@ -18,4 +23,18 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Terminal aesthetic */
+.text-glow {
+  text-shadow: 0 0 8px currentColor, 0 0 12px currentColor;
+}
+
+.border-terminal-green\/30 {
+  border-color: rgba(51, 255, 51, 0.3);
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
 }
