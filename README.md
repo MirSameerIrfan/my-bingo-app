@@ -9,6 +9,7 @@
 Soc Ops is a modern social bingo game designed for in-person events, team mixers, and networking sessions. Players explore the room, meet new people, and mark off squares as they discover shared experiences and interesting facts.
 
 **🎯 Game Rules:**
+
 - 24 randomized conversation starters + 1 free space
 - Find people who match each square
 - First to get 5 in a row wins!
@@ -36,6 +37,7 @@ Open [http://localhost:5173](http://localhost:5173) and start playing!
 ## 🛠️ Development
 
 **Prerequisites:**
+
 - [Node.js 22+](https://nodejs.org/)
 
 **Available Commands:**
@@ -48,6 +50,7 @@ npm run lint     # Check code quality
 ```
 
 **Mandatory Checklist Before Commit:**
+
 - [ ] `npm run lint` — No ESLint errors
 - [ ] `npm run build` — TypeScript compiles cleanly
 - [ ] `npm run test` — All Vitest tests pass
@@ -75,6 +78,7 @@ https://{your-username}.github.io/{your-repo-name}
 ```
 
 **Setup Steps:**
+
 1. Go to your repo's **Settings → Pages**
 2. Set source to **GitHub Actions**
 3. Push to `main` branch

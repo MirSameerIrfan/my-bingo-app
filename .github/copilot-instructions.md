@@ -51,6 +51,7 @@ board[id].isMarked = true;
 **Aesthetic**: Authentic 1970s-80s CRT terminal with phosphor green monochrome display, scanlines, and vintage computing character.
 
 **Color Palette** (defined in [src/index.css](src/index.css) `@theme`):
+
 - `--color-terminal-green` — Primary phosphor green (`oklch(0.85 0.15 145)`)
 - `--color-terminal-glow` — Bright glow variant (`oklch(0.9 0.2 145)`)
 - `--color-terminal-bright` — Maximum brightness (`oklch(0.95 0.22 145)`)
@@ -61,6 +62,7 @@ board[id].isMarked = true;
 **Typography**: Monospace fonts only—`Courier Prime`, `Courier New`, `Consolas`. Never use sans-serif. All text should have `.text-glow` class for phosphor effect.
 
 **Visual Effects**:
+
 - **Scanlines**: `.scanlines` class creates animated horizontal CRT lines (4px pattern, 8s animation)
 - **Screen Curvature**: `.crt-screen` adds rounded corners and inset glow shadow
 - **Phosphor Glow**: Use `.text-glow`, `.text-glow-md`, `.text-glow-lg` utilities with layered text-shadow
@@ -68,6 +70,7 @@ board[id].isMarked = true;
 - **ASCII Borders**: Use box-drawing characters (`╔═╗║╚╝`) instead of CSS borders where appropriate
 
 **Component Patterns**:
+
 - **Terminal Windows**: Dark background (`bg-bg-dark`), 2px green borders, window controls (3 squares top-left)
 - **Interactive Elements**: Green borders that intensify on hover, glow on marked/active states
 - **Animations**: Favor glitch, flicker, and glow pulse effects over smooth transitions
