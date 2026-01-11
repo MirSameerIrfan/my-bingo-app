@@ -1,11 +1,23 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-accent: #2563eb;
-  --color-accent-light: #3b82f6;
-  --color-marked: #dcfce7;
-  --color-marked-border: #22c55e;
-  --color-bingo: #fbbf24;
+  /* Retro Terminal Green Color Palette */
+  --color-terminal-green: oklch(0.85 0.15 145);
+  --color-terminal-glow: oklch(0.9 0.2 145);
+  --color-terminal-bright: oklch(0.95 0.22 145);
+  --color-terminal-dim: oklch(0.65 0.12 145);
+  --color-bg-dark: oklch(0.1 0.02 145);
+  --color-bg-darker: oklch(0.05 0.01 145);
+  --color-scanline: oklch(0.15 0.02 145);
+  --color-amber-warn: oklch(0.75 0.15 75);
+  
+  /* Typography */
+  --font-terminal: "Courier Prime", "Courier New", "Consolas", monospace;
+  
+  /* Shadows for CRT Glow Effect */
+  --shadow-glow-sm: 0 0 8px currentColor;
+  --shadow-glow-md: 0 0 12px currentColor, 0 0 24px currentColor;
+  --shadow-glow-lg: 0 0 16px currentColor, 0 0 32px currentColor, 0 0 48px currentColor;
 }
 
 html,
@@ -16,6 +28,73 @@ body,
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-terminal);
   -webkit-tap-highlight-color: transparent;
+  background: var(--color-bg-darker);
+  color: var(--color-terminal-green);
+}
+
+/* CRT Scanline Effect */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    var(--color-scanline) 50%
+  );
+  background-size: 100% 4px;
+  animation: scanline 8s linear infinite;
+  opacity: 0.15;
+}
+
+/* CRT Screen Curvature */
+.crt-screen {
+  border-radius: 12px;
+  box-shadow: 
+    inset 0 0 80px rgba(0, 255, 65, 0.1),
+    0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Terminal Cursor Blink */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink::after {
+  content: '▋';
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+/* Text Glow Effect */
+.text-glow {
+  text-shadow: var(--shadow-glow-sm);
+}
+
+.text-glow-md {
+  text-shadow: var(--shadow-glow-md);
+}
+
+.text-glow-lg {
+  text-shadow: var(--shadow-glow-lg);
 }

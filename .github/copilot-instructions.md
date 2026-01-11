@@ -46,6 +46,35 @@ board[id].isMarked = true;
 
 **Design**: Avoid generic AI aesthetics per [.github/instructions/frontend-design.instructions.md](.github/instructions/frontend-design.instructions.md)—commit to cohesive theme, dominant colors with sharp accents, high-impact animations.
 
+## Design Guide: Retro Terminal Green
+
+**Aesthetic**: Authentic 1970s-80s CRT terminal with phosphor green monochrome display, scanlines, and vintage computing character.
+
+**Color Palette** (defined in [src/index.css](src/index.css) `@theme`):
+- `--color-terminal-green` — Primary phosphor green (`oklch(0.85 0.15 145)`)
+- `--color-terminal-glow` — Bright glow variant (`oklch(0.9 0.2 145)`)
+- `--color-terminal-bright` — Maximum brightness (`oklch(0.95 0.22 145)`)
+- `--color-terminal-dim` — Dimmed text (`oklch(0.65 0.12 145)`)
+- `--color-bg-dark` / `--color-bg-darker` — Deep black backgrounds with subtle green tint
+- `--color-amber-warn` — Amber for warnings/wins (`oklch(0.75 0.15 75)`)
+
+**Typography**: Monospace fonts only—`Courier Prime`, `Courier New`, `Consolas`. Never use sans-serif. All text should have `.text-glow` class for phosphor effect.
+
+**Visual Effects**:
+- **Scanlines**: `.scanlines` class creates animated horizontal CRT lines (4px pattern, 8s animation)
+- **Screen Curvature**: `.crt-screen` adds rounded corners and inset glow shadow
+- **Phosphor Glow**: Use `.text-glow`, `.text-glow-md`, `.text-glow-lg` utilities with layered text-shadow
+- **Box Glow**: Inline `boxShadow` with `var(--color-terminal-green)` for interactive elements
+- **ASCII Borders**: Use box-drawing characters (`╔═╗║╚╝`) instead of CSS borders where appropriate
+
+**Component Patterns**:
+- **Terminal Windows**: Dark background (`bg-bg-dark`), 2px green borders, window controls (3 squares top-left)
+- **Interactive Elements**: Green borders that intensify on hover, glow on marked/active states
+- **Animations**: Favor glitch, flicker, and glow pulse effects over smooth transitions
+- **Checkmarks**: Use `[X]` ASCII notation, not Unicode symbols
+
+**Accessibility**: High-contrast green-on-black meets WCAG AA. Scanlines are subtle (15% opacity). Respect `prefers-reduced-motion` for flicker effects.
+
 ## Key Integration Points
 
 **Questions**: Edit [src/data/questions.ts](src/data/questions.ts) array (24 items, shuffled on board gen). `FREE_SPACE` constant for center square.
