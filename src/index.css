@@ -1,37 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Work+Sans:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 @theme {
-  --color-accent: #2563eb;
-  --color-accent-light: #3b82f6;
-  --color-marked: #dcfce7;
-  --color-marked-border: #22c55e;
-  --color-bingo: #fbbf24;
-  --color-terminal-green: oklch(0.85 0.15 145);
-  --color-terminal-glow: oklch(0.9 0.2 145);
-  --color-terminal-dim: oklch(0.65 0.12 145);
-  --color-terminal-bright: oklch(0.95 0.22 145);
-  --color-bg-dark: oklch(0.1 0.02 145);
-  --color-bg-darker: oklch(0.05 0.01 145);
-  --color-amber-warn: oklch(0.75 0.15 75);
-  --font-terminal: 'Courier Prime', 'Courier New', Courier, monospace;
-  /* Retro Terminal Green Color Palette */
-  --color-terminal-green: oklch(0.85 0.15 145);
-  --color-terminal-glow: oklch(0.9 0.2 145);
-  --color-terminal-bright: oklch(0.95 0.22 145);
-  --color-terminal-dim: oklch(0.65 0.12 145);
-  --color-bg-dark: oklch(0.1 0.02 145);
-  --color-bg-darker: oklch(0.05 0.01 145);
-  --color-scanline: oklch(0.15 0.02 145);
-  --color-amber-warn: oklch(0.75 0.15 75);
-  
-  /* Typography */
-  --font-terminal: "Courier Prime", "Courier New", "Consolas", monospace;
-  
-  /* Shadows for CRT Glow Effect */
-  --shadow-glow-sm: 0 0 8px currentColor;
-  --shadow-glow-md: 0 0 12px currentColor, 0 0 24px currentColor;
-  --shadow-glow-lg: 0 0 16px currentColor, 0 0 32px currentColor, 0 0 48px currentColor;
+  --color-sky-haze: oklch(0.96 0.05 230);
+  --color-sky-zenith: oklch(0.92 0.06 210);
+  --color-sky-dawn: oklch(0.9 0.08 35);
+  --color-sky-twilight: oklch(0.85 0.07 320);
+  --color-cloud-soft: oklch(0.98 0.02 250);
+  --color-cloud-bright: oklch(0.99 0 0);
+  --color-cloud-blush: oklch(0.94 0.05 330);
+  --color-text-primary: oklch(0.3 0.03 250);
+  --color-text-muted: oklch(0.54 0.03 250);
+  --color-text-soft: oklch(0.66 0.02 250);
+  --color-accent: oklch(0.74 0.12 290);
+  --color-accent-strong: oklch(0.68 0.15 305);
+  --color-highlight: oklch(0.82 0.12 60);
+  --shadow-soft: 0 20px 45px rgba(168, 189, 231, 0.3);
+  --shadow-bright: 0 24px 60px rgba(255, 199, 229, 0.35);
+  --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --font-display: 'Quicksand', 'Avenir', 'Helvetica Neue', sans-serif;
+  --font-body: 'Work Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
 }
 
 html,
@@ -42,6 +32,114 @@ body,
 
 body {
   margin: 0;
-  font-family: var(--font-terminal);
+  font-family: var(--font-body);
+  background: radial-gradient(at 20% 20%, var(--color-cloud-soft) 0%, transparent 60%),
+    radial-gradient(at 80% 30%, var(--color-cloud-blush) 0%, transparent 55%),
+    linear-gradient(160deg, var(--color-sky-haze) 0%, var(--color-sky-zenith) 45%, var(--color-sky-twilight) 100%);
+  color: var(--color-text-primary);
+  min-height: 100%;
   -webkit-tap-highlight-color: transparent;
+}
+
+.sky-stage {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.cloud-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cloud-blob {
+  position: absolute;
+  border-radius: 999px;
+  background: var(--color-cloud-soft);
+  opacity: 0.7;
+  filter: blur(0px);
+  box-shadow: var(--shadow-soft);
+  animation: floatCloud 14s ease-in-out infinite;
+}
+
+.cloud-blob[data-variant="blush"] {
+  background: var(--color-cloud-blush);
+}
+
+.cloud-blob[data-variant="highlight"] {
+  background: var(--color-highlight);
+  opacity: 0.6;
+}
+
+.cloud-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.72) 100%);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(22px);
+}
+
+.cloud-pill {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.68));
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-inner);
+}
+
+.cloud-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  border-radius: 999px;
+  border: none;
+  color: var(--color-text-primary);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  box-shadow: var(--shadow-bright);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.cloud-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 28px 40px rgba(163, 197, 255, 0.35);
+}
+
+.cloud-button:active {
+  transform: translateY(0px);
+  box-shadow: 0 12px 24px rgba(120, 150, 200, 0.35);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-soft {
+  color: var(--color-text-soft);
+}
+
+.badge-soft {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-inner);
+}
+
+@keyframes floatCloud {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(8%, -6%, 0) scale(1.05);
+  }
 }
