@@ -66,18 +66,19 @@ export function StartScreen({ onStart }: StartScreenProps) {
 
   // Animation sequence
   useEffect(() => {
+    const timeouts: number[] = [];
+    
     if (reducedMotion) {
       // Skip to ready state immediately with simple fade
-      Promise.resolve().then(() => {
+      const timeout = window.setTimeout(() => {
         setPhase('ready');
         setBootLines(BOOT_LINES);
         setLogoLines(ASCII_LOGO);
         setShowReady(true);
-      });
-      return;
+      }, 0);
+      timeouts.push(timeout);
+      return () => timeouts.forEach(clearTimeout);
     }
-
-    const timeouts: number[] = [];
 
     // Power On sequence (800ms blur + scale + flash)
     timeouts.push(window.setTimeout(() => {

@@ -152,15 +152,15 @@ body {
 
 /* Reduce motion support */
 @media (prefers-reduced-motion: reduce) {
-  .crt-scanlines,
-  .crt-scanlines-slow,
-  .glow-pulse,
-  .flicker-effect,
-  .glitch-effect {
+  .crt-container .crt-scanlines,
+  .crt-container .crt-scanlines-slow,
+  .crt-container .glow-pulse,
+  .crt-container .flicker-effect,
+  .crt-container .glitch-effect {
     animation: none;
   }
   
-  * {
+  .crt-container * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
