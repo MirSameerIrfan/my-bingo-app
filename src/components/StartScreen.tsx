@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 interface StartScreenProps {
   onStart: () => void;
@@ -115,7 +115,8 @@ export function StartScreen({ onStart }: StartScreenProps) {
     const glitchDelay = logoStartDelay + (ASCII_LOGO.length * 100);
     timeouts.push(window.setTimeout(() => {
       setShowGlitch(true);
-      setTimeout(() => setShowGlitch(false), 150);
+      const glitchTimeout = window.setTimeout(() => setShowGlitch(false), 150);
+      timeouts.push(glitchTimeout);
     }, glitchDelay));
 
     // Ready state
@@ -140,15 +141,23 @@ export function StartScreen({ onStart }: StartScreenProps) {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
-  const powerOnStyle = phase === 'powerOn' && !reducedMotion ? {
-    filter: 'blur(20px) brightness(1.5)',
-    transform: 'scale(0.1)',
-    opacity: 0,
-  } : {};
+  const powerOnStyle = useMemo(() => {
+    if (phase === 'powerOn' && !reducedMotion) {
+      return {
+        filter: 'blur(20px) brightness(1.5)',
+        transform: 'scale(0.1)',
+        opacity: 0,
+      };
+    }
+    return {};
+  }, [phase, reducedMotion]);
 
-  const powerOnTransition = phase === 'powerOn' && !reducedMotion
-    ? 'filter 800ms ease-out, transform 800ms ease-out, opacity 800ms ease-out'
-    : undefined;
+  const powerOnTransition = useMemo(() => {
+    if (phase === 'powerOn' && !reducedMotion) {
+      return 'filter 800ms ease-out, transform 800ms ease-out, opacity 800ms ease-out';
+    }
+    return undefined;
+  }, [phase, reducedMotion]);
 
   return (
     <div className="crt-container relative flex flex-col items-center justify-center min-h-full bg-bg-darker overflow-hidden">

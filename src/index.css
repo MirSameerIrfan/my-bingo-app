@@ -40,15 +40,6 @@ body {
   }
 }
 
-@keyframes scanline-slow {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
-}
-
 @keyframes glow-pulse {
   0%, 100% {
     filter: brightness(1) drop-shadow(0 0 8px var(--color-terminal-glow));
@@ -113,7 +104,7 @@ body {
   background: linear-gradient(transparent, var(--color-terminal-green));
   opacity: 0.05;
   pointer-events: none;
-  animation: scanline-slow 16s linear infinite;
+  animation: scanline 16s linear infinite;
   z-index: 9;
 }
 
