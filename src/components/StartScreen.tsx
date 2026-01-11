@@ -53,9 +53,12 @@ export function StartScreen({ onStart }: StartScreenProps) {
   }, [phase, bootLine]);
 
   const executeCommand = useCallback((cmd: 'S' | 'H' | 'A') => {
-    if (isExecutingRef.current) return; // Prevent race conditions
-    
+    // Atomic check-and-set to prevent race conditions
+    if (isExecutingRef.current) {
+      return;
+    }
     isExecutingRef.current = true;
+    
     setCommand(cmd);
     setTimeout(() => {
       if (cmd === 'S') {
@@ -76,10 +79,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
       const key = e.key.toLowerCase();
       
       if (phase === 'help' || phase === 'about') {
-        if (key === 'escape') {
-          setPhase('ready');
-          setCommand('');
-        } else if (key === 'enter' || key === ' ') {
+        if (key === 'escape' || key === 'enter' || key === ' ') {
           setPhase('ready');
           setCommand('');
         }
